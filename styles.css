@@ -1,4 +1,11 @@
-th {
+.blue {
+  color:#0C2340;
+}
+
+.red{
+  color: #BD1F2D;
+}
+
   border-bottum: 1px solid gray;
   font-weight : bold;
   font-size : 1-em;
