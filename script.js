@@ -3,5 +3,6 @@ function downloadData() {
 var startdate = document.getElementById('startdate").value;
 var end date = document.getElementById('startdate").value;
 console.log(startdate);
-alert(enddate);
+console.log("Ending date: " + enddate);
+  fetch("https://compute.samford.edu/zohauth/clients/data");
 }
