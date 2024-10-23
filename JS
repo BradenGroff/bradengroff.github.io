@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trackman Pitch Status Viewer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1, h2 {
+            text-align: center;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            cursor: pointer;
+        }
+
+        .sorted-asc::after {
+            content: ' ▲';
+        }
+
+        .sorted-desc::after {
+            content: ' ▼';
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Trackman Pitch Status Viewer</h1>
+        
+        <form id="dateFilterForm">
+            <label for="startDate">Start Date:</label>
+            <input type="date" id="startDate" required>
+            
+            <label for="endDate">End Date:</label>
+            <input type="date" id="endDate" required>
+            
+            <button type="submit">Filter Pitches</button>
+        </form>
+
+        <h2>Pitches Data</h2>
+        <table id="pitchTable">
+            <thead>
+                <tr>
+                    <th id="idHeader">ID</th>
+                    <th id="speedHeader">Speed (mph)</th>
+                    <th id="resultHeader">Result</th>
+                    <th id="datetimeHeader">DateTime</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data will be inserted here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        const pitchData = [
+            { id: 1, speed: 75, result: 'Strike', datetime: '2024-01-10T10:00:00' },
+            { id: 2, speed: 70, result: 'Ball', datetime: '2024-01-11T11:30:00' },
+            { id: 3, speed: 80, result: 'Strike', datetime: '2024-01-15T12:15:00' },
+            { id: 4, speed: 65, result: 'Foul', datetime: '2024-01-18T14:00:00' },
+            { id: 5, speed: 85, result: 'Strike', datetime: '2024-02-01T16:45:00' },
+            // Add more sample data as needed
+        ];
+
+        document.getElementById('dateFilterForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const startDate = new Date(document.getElementById('startDate').value);
+            const endDate = new Date(document.getElementById('endDate').value);
+            endDate.setHours(23, 59, 59, 999);
+
+            const filteredData = pitchData.filter(item => {
+                const itemDate = new Date(item.datetime);
+                return itemDate >= startDate && itemDate <= endDate;
+            });
+
+            populateTable(filteredData);
+        });
+
+        function populateTable(data) {
+            const tableBody = document.getElementById('pitchTable').querySelector('tbody');
+            tableBody.innerHTML = '';
+
+            data.forEach(item => {
+                const row = document.createElement('tr');
+                
+                const idCell = document.createElement('td');
+                idCell.textContent = item.id;
+                row.appendChild(idCell);
+                
+                const speedCell = document.createElement('td');
+                speedCell.textContent = item.speed;
+                row.appendChild(speedCell);
+                
+                const resultCell = document.createElement('td');
+                resultCell.textContent = item.result;
+                row.appendChild(resultCell);
+                
+                const datetimeCell = document.createElement('td');
+                datetimeCell.textContent = new Date(item.datetime).toLocaleString();
+                row.appendChild(datetimeCell);
+
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Sorting functionality
+        let sortOrder = {
+            id: 'asc',
+            speed: 'asc',
+            result: 'asc',
+            datetime: 'asc',
+        };
+
+        function sortData(key) {
+            pitchData.sort((a, b) => {
+                if (a[key] < b[key]) return sortOrder[key] === 'asc' ? -1 : 1;
+                if (a[key] > b[key]) return sortOrder[key] === 'asc' ? 1 : -1;
+                return 0;
+            });
+
+            // Toggle sort order
+            sortOrder[key] = sortOrder[key] === 'asc' ? 'desc' : 'asc';
+
+            // Clear previous sorting indicators
+            clearSortingIndicators();
+
+            // Set sorting indicator
+            document.getElementById(`${key}Header`).classList.add(sortOrder[key] === 'asc' ? 'sorted-asc' : 'sorted-desc');
+
+            populateTable(pitchData); // Repopulate with sorted data
+        }
+
+        function clearSortingIndicators() {
+            const headers = document.querySelectorAll('th');
+            headers.forEach(header => {
+                header.classList.remove('sorted-asc', 'sorted-desc');
+            });
+        }
+
+        // Event listeners for sorting
+        document.getElementById('idHeader').addEventListener('click', () => sortData('id'));
+        document.getElementById('speedHeader').addEventListener('click', () => sortData('speed'));
+        document.getElementById('resultHeader').addEventListener('click', () => sortData('result'));
+        document.getElementById('datetimeHeader').addEventListener('click', () => sortData('datetime'));
+    </script>
+</body>
+</html>
