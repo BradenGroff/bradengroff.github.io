@@ -1,32 +1,52 @@
-document.getElementById('pitchForm').addEventListener('submit', function(event) {
+const pitchData = [
+    { id: 1, speed: 75, result: 'Strike', datetime: '2024-01-10T10:00:00' },
+    { id: 2, speed: 70, result: 'Ball', datetime: '2024-01-11T11:30:00' },
+    { id: 3, speed: 80, result: 'Strike', datetime: '2024-01-15T12:15:00' },
+    { id: 4, speed: 65, result: 'Foul', datetime: '2024-01-18T14:00:00' },
+    { id: 5, speed: 85, result: 'Strike', datetime: '2024-02-01T16:45:00' },
+    // Add more sample data as needed
+];
+
+document.getElementById('dateFilterForm').addEventListener('submit', function(event) {
     event.preventDefault();
 
-    const pitchType = document.getElementById('pitchType').value;
-    const speed = document.getElementById('speed').value;
-    const date = document.getElementById('date').value;
+    const startDate = new Date(document.getElementById('startDate').value);
+    const endDate = new Date(document.getElementById('endDate').value);
+    
+    // Ensure end date is inclusive
+    endDate.setHours(23, 59, 59, 999);
 
-    addPitchToTable(pitchType, speed, date);
+    const filteredData = pitchData.filter(item => {
+        const itemDate = new Date(item.datetime);
+        return itemDate >= startDate && itemDate <= endDate;
+    });
 
-    // Reset the form
-    this.reset();
+    populateTable(filteredData);
 });
 
-function addPitchToTable(pitchType, speed, date) {
+function populateTable(data) {
     const tableBody = document.getElementById('pitchTable').querySelector('tbody');
-    
-    const row = document.createElement('tr');
-    
-    const typeCell = document.createElement('td');
-    typeCell.textContent = pitchType;
-    row.appendChild(typeCell);
-    
-    const speedCell = document.createElement('td');
-    speedCell.textContent = speed;
-    row.appendChild(speedCell);
-    
-    const dateCell = document.createElement('td');
-    dateCell.textContent = date;
-    row.appendChild(dateCell);
+    tableBody.innerHTML = ''; // Clear any existing data
 
-    tableBody.appendChild(row);
+    data.forEach(item => {
+        const row = document.createElement('tr');
+        
+        const idCell = document.createElement('td');
+        idCell.textContent = item.id;
+        row.appendChild(idCell);
+        
+        const speedCell = document.createElement('td');
+        speedCell.textContent = item.speed;
+        row.appendChild(speedCell);
+        
+        const resultCell = document.createElement('td');
+        resultCell.textContent = item.result;
+        row.appendChild(resultCell);
+        
+        const datetimeCell = document.createElement('td');
+        datetimeCell.textContent = new Date(item.datetime).toLocaleString();
+        row.appendChild(datetimeCell);
+
+        tableBody.appendChild(row);
+    });
 }
