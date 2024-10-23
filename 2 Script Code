@@ -1,0 +1,32 @@
+document.getElementById('pitchForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const pitchType = document.getElementById('pitchType').value;
+    const speed = document.getElementById('speed').value;
+    const date = document.getElementById('date').value;
+
+    addPitchToTable(pitchType, speed, date);
+
+    // Reset the form
+    this.reset();
+});
+
+function addPitchToTable(pitchType, speed, date) {
+    const tableBody = document.getElementById('pitchTable').querySelector('tbody');
+    
+    const row = document.createElement('tr');
+    
+    const typeCell = document.createElement('td');
+    typeCell.textContent = pitchType;
+    row.appendChild(typeCell);
+    
+    const speedCell = document.createElement('td');
+    speedCell.textContent = speed;
+    row.appendChild(speedCell);
+    
+    const dateCell = document.createElement('td');
+    dateCell.textContent = date;
+    row.appendChild(dateCell);
+
+    tableBody.appendChild(row);
+}
